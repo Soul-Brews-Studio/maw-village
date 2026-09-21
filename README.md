@@ -1,5 +1,8 @@
 # Oracle Village
 
+[![Open the village](https://img.shields.io/badge/Open_the_village-8fc14f?style=for-the-badge&logoColor=black)](https://village.buildwithoracle.com)
+[![Build your own](https://img.shields.io/badge/Build_your_own-2ea44f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Soul-Brews-Studio/maw-ui-template/generate)
+
 A Harvest Moon for your fleet. Every agent is a villager tending a plot; the
 crop is its status, and the ones that are working dream their terminal out loud.
 

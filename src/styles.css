@@ -1,0 +1,366 @@
+@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource/silkscreen";
+
+/* Daylight. god is a dark room and Bridge is a dark board; the village is a
+   place you'd stand in on a clear morning, so the interface sits on the glass
+   in front of it rather than framing it. */
+
+:root {
+  --ink: #3a2e22;
+  --ink-soft: #6b5a45;
+  --paper: #fdf6e6;
+  --paper-edge: #e3d2ad;
+  --wood: #a9754a;
+  --leaf: #4a8f3c;
+  --berry: #c8452a;
+  --sun: #e8a33d;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Silkscreen", system-ui, sans-serif;
+  color: var(--ink);
+  background: #bfe3f0;
+  overflow: hidden;
+}
+
+::selection { background: var(--sun); color: #2a2118; }
+
+:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+
+.app { position: fixed; inset: 0; }
+.stage { position: absolute; inset: 0; }
+
+.empty {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 2rem;
+  max-width: 44ch;
+  margin: 0 auto;
+  text-align: center;
+  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+/* ── HUD ─────────────────────────────────────────────────────────────── */
+
+.hud {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(to bottom, #fdf6e6f2, #fdf6e6cc 70%, transparent);
+}
+
+.hud h1 {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  color: var(--wood);
+}
+
+.tally { display: flex; gap: 1.1rem; margin: 0; }
+.tally div { display: flex; flex-direction: column; gap: 0.1rem; }
+.tally dt { font-size: 0.5rem; letter-spacing: 0.08em; color: var(--ink-soft); text-transform: uppercase; }
+.tally dd {
+  margin: 0;
+  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+.tally [data-alert] dd { color: var(--berry); }
+
+.search, .hud button {
+  font: inherit;
+  font-size: 0.6rem;
+  padding: 0.45rem 0.7rem;
+  background: var(--paper);
+  border: 2px solid var(--paper-edge);
+  border-radius: 4px;
+  color: var(--ink);
+}
+
+.search { flex: 1 1 10rem; min-width: 0; }
+.search::placeholder { color: #a08d70; }
+.hud button { cursor: pointer; }
+.hud button:hover { border-color: var(--wood); }
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.55rem;
+  color: var(--ink-soft);
+}
+
+.link-host { font-family: "JetBrains Mono Variable", ui-monospace, monospace; }
+
+.lamp { width: 8px; height: 8px; border-radius: 50%; background: #b0a890; }
+.link[data-stream="open"] .lamp { background: var(--leaf); }
+.link[data-stream="connecting"] .lamp { background: var(--sun); animation: blink 1.3s ease-in-out infinite; }
+.link[data-stream="closed"] .lamp { background: var(--berry); }
+@keyframes blink { 50% { opacity: 0.3; } }
+
+/* ── Legend ──────────────────────────────────────────────────────────── */
+
+.legend {
+  position: absolute;
+  left: 1rem;
+  bottom: 0.9rem;
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  font-size: 0.55rem;
+  color: var(--ink);
+  background: #fdf6e6d9;
+  border: 2px solid var(--paper-edge);
+  border-radius: 4px;
+  padding: 0.45rem 0.65rem;
+}
+
+.legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
+.swatch { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+/* ── Panel ───────────────────────────────────────────────────────────── */
+
+.panel {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: min(34rem, 100%);
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border-left: 3px solid var(--paper-edge);
+  box-shadow: -12px 0 40px #00000026;
+}
+
+.panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem 0.5rem;
+}
+
+.panel-head h2 { margin: 0; font-size: 0.85rem; color: var(--wood); }
+
+.panel-sub {
+  margin: 0.35rem 0 0;
+  display: flex;
+  gap: 0.6rem;
+  font-size: 0.55rem;
+  color: var(--ink-soft);
+}
+
+.panel-status { text-transform: uppercase; letter-spacing: 0.06em; }
+.panel-status[data-status="working"] { color: var(--leaf); }
+.panel-status[data-status="blocked"] { color: var(--berry); }
+.panel-status[data-status="done"] { color: var(--sun); }
+
+.panel-close {
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 0.2rem 0.35rem;
+}
+.panel-close:hover { color: var(--berry); }
+
+.panel-path {
+  margin: 0;
+  padding: 0 1rem 0.6rem;
+  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+  font-size: 0.625rem;
+  color: #8a785e;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panel-body {
+  flex: 1;
+  margin: 0 1rem;
+  padding: 0.8rem;
+  overflow: auto;
+  background: #2b2419;
+  border-radius: 4px;
+  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: #e6dcc6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.panel-compose { display: flex; gap: 0.4rem; padding: 0.8rem 1rem 1rem; }
+
+.panel-compose input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.6rem;
+  background: #fff;
+  border: 2px solid var(--paper-edge);
+  border-radius: 4px;
+  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: var(--ink);
+}
+
+.panel-compose input:disabled { background: #efe6d2; color: #9c8a6e; }
+
+.panel-compose button {
+  font: inherit;
+  font-size: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: 4px;
+  background: var(--leaf);
+  color: #fff;
+  cursor: pointer;
+}
+
+.panel-compose .panel-wake { background: var(--sun); }
+.panel-compose button:disabled { background: #cabfa8; cursor: not-allowed; }
+
+/* ── Sheets and notices ──────────────────────────────────────────────── */
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: #2b241966;
+  backdrop-filter: blur(2px);
+}
+
+.sheet {
+  width: min(30rem, 100%);
+  padding: 1.5rem;
+  background: var(--paper);
+  border: 3px solid var(--paper-edge);
+  border-radius: 6px;
+  box-shadow: 0 20px 50px #00000033;
+}
+
+.sheet h2 { margin: 0 0 0.5rem; font-size: 0.9rem; color: var(--wood); }
+
+.sheet p {
+  margin: 0 0 1rem;
+  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+  font-size: 0.75rem;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+.sheet input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 2px solid var(--paper-edge);
+  border-radius: 4px;
+  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+  font-size: 0.75rem;
+}
+
+.sheet button {
+  margin-top: 0.8rem;
+  font: inherit;
+  font-size: 0.6rem;
+  padding: 0.55rem 0.9rem;
+  border: 0;
+  border-radius: 4px;
+  background: var(--leaf);
+  color: #fff;
+  cursor: pointer;
+}
+
+.notice {
+  position: fixed;
+  left: 50%;
+  bottom: 1.2rem;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.6rem;
+  background: var(--paper);
+  border: 2px solid var(--paper-edge);
+  border-radius: 4px;
+  box-shadow: 0 6px 18px #00000026;
+}
+
+@media (max-width: 760px) {
+  .panel { width: 100%; }
+  .legend { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; }
+}
+
+/* ── Dreams ──────────────────────────────────────────────────────────── */
+
+/* A thought bubble with a terminal inside it. Paper, not glass: it belongs to
+   the village, not to the HUD. */
+.dream {
+  position: relative;
+  width: 17rem;
+  padding: 0.45rem 0.55rem;
+  background: var(--paper);
+  border: 2px solid var(--paper-edge);
+  border-radius: 8px;
+  box-shadow: 0 6px 16px #2b241933;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.dream pre {
+  margin: 0;
+  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+  font-size: 7px;
+  line-height: 1.45;
+  color: #4a3f2f;
+  white-space: pre;
+  overflow: hidden;
+  max-height: 5.2rem;
+}
+
+.dream-tail {
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  width: 10px;
+  height: 10px;
+  transform: translateX(-50%) rotate(45deg);
+  background: var(--paper);
+  border-right: 2px solid var(--paper-edge);
+  border-bottom: 2px solid var(--paper-edge);
+}
+
+.dream-working { border-color: #86bf6a; }
+.dream-working .dream-tail { border-color: #86bf6a; }
+.dream-blocked { border-color: var(--berry); }
+.dream-blocked .dream-tail { border-color: var(--berry); }
+.dream-asleep { opacity: 0.94; }
+
+.dream:hover { border-color: var(--sun); }
+
+.zzz {
+  font-family: "Silkscreen", system-ui, sans-serif;
+  font-size: 13px;
+  color: #6b7f96;
+  text-shadow: 0 1px 0 #ffffff80;
+  pointer-events: none;
+  user-select: none;
+}

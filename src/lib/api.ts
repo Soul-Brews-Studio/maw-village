@@ -106,6 +106,25 @@ export function mixedContentBlocked(): boolean {
   return !loopback;
 }
 
+/**
+ * Chrome's Private Network Access blocks a public HTTPS page from reaching a
+ * private or loopback address unless the request opts in. Without this the
+ * fetch is refused in the browser and never reaches the server at all — which
+ * looks exactly like a backend that is down, except nothing appears in its
+ * access log. god sets the same field; dropping it is why this looked offline
+ * against a server that was answering.
+ */
+export function addressSpace(): "loopback" | "local" | undefined {
+  const origin = backendOrigin();
+  if (!origin) return undefined;
+  const host = new URL(origin).hostname.toLowerCase();
+  if (host === "localhost" || host === "[::1]" || host === "::1"
+    || /^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(host)) return "loopback";
+  if (host.endsWith(".local") || /^10\./.test(host) || /^192\.168\./.test(host)
+    || /^172\.(1[6-9]|2\d|3[01])\./.test(host)) return "local";
+  return undefined;
+}
+
 export class ApiError extends Error {
   constructor(message: string, readonly status: number) { super(message); }
 }
@@ -114,7 +133,10 @@ async function call<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
   const token = operatorToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);
-  const response = await fetch(new URL(path, httpBase()), { ...init, headers });
+  const space = addressSpace();
+  const request: RequestInit & { targetAddressSpace?: "loopback" | "local" } = { ...init, headers };
+  if (space) request.targetAddressSpace = space;
+  const response = await fetch(new URL(path, httpBase()), request);
   if (!response.ok) {
     throw new ApiError(
       response.status === 401 ? "operator token required" : `${path} failed`,

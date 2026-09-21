@@ -11,7 +11,7 @@
 //                   accepts that read-only; a token-guarded one closes it,
 //                   which is the correct answer to "no credential".
 
-import { backendOrigin, operatorToken, socketURL } from "./api";
+import { addressSpace, backendOrigin, operatorToken, socketURL } from "./api";
 
 export const WS_PROTOCOL = "maw.ws.v1";
 
@@ -30,11 +30,14 @@ async function fetchTicket(): Promise<string | null> {
   if (!token) return null;
   const base = backendOrigin() ?? window.location.origin;
   try {
-    const response = await fetch(new URL("/api/auth/ws-ticket", base), {
+    const space = addressSpace();
+    const init: RequestInit & { targetAddressSpace?: "loopback" | "local" } = {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ path: "/ws" }),
-    });
+    };
+    if (space) init.targetAddressSpace = space;
+    const response = await fetch(new URL("/api/auth/ws-ticket", base), init);
     if (!response.ok) return null;
     const value = await response.json() as { protocol?: string; ticket?: string };
     if (value.protocol !== WS_PROTOCOL || typeof value.ticket !== "string") return null;

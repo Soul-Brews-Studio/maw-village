@@ -172,6 +172,7 @@ export default function App() {
         <span><i className="swatch" style={{ background: "#9fd17a" }} /> idle</span>
         <span><i className="swatch" style={{ background: "#f0c24b" }} /> done</span>
         <span>click a crop to read its terminal</span>
+        <span className="build" title="build">{__BUILD_ID__}</span>
       </footer>
 
       {open && (

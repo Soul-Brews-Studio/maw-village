@@ -364,3 +364,5 @@ body {
   pointer-events: none;
   user-select: none;
 }
+
+.build { color: #9c8a6e; font-family: "JetBrains Mono Variable", ui-monospace, monospace; }

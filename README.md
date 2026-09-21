@@ -35,9 +35,21 @@ to close.
 Watching needs nothing. Talking back and waking need the token.
 
 ```bash
-maw herdr serve --insecure-no-token --listen 127.0.0.1:3488 --demo-minutes 30
+# watching from https://village.buildwithoracle.com — name it, or the backend answers 403
+maw herdr serve --insecure-no-token --listen 127.0.0.1:3488 --demo-minutes 60 \
+  --allow-origin https://village.buildwithoracle.com \
+  --allow-origin https://bridge.buildwithoracle.com
+
+# from a page you are serving yourself, loopback is already allowed
+maw herdr serve --insecure-no-token --listen 127.0.0.1:3488 --demo-minutes 60
 maw herdr serve --token-file ~/.maw-herdr-token --listen 127.0.0.1:3457
 ```
+
+Loopback pages and `god.buildwithoracle.com` are allowed without asking. Any
+other site has to be named with `--allow-origin`, because an allowed origin can
+read every pane the server can see. Requests appear in the server's output as
+they happen, so a page that stays offline tells you whether it was refused or
+never arrived at all.
 
 ## Same fleet, three windows
 

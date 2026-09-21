@@ -31,7 +31,7 @@ export function Village({ agents, selected, previews, onOpen, onHover }: {
 
   return (
     <Canvas
-      shadows
+      shadows="percentage"
       camera={{ position: cameraPosition, fov: 45, near: 0.5, far: distance * 4 }}
       dpr={[1, 1.75]}
     >
